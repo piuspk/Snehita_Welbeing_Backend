@@ -4,7 +4,7 @@ const nodemailer = require("nodemailer");
 const app = express();
 const cors = require("cors");
 require("./db/conn");
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 const session = require("express-session");
 const passport = require("passport");
 const OAuth2Strategy = require("passport-google-oauth2").Strategy;
