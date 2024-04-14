@@ -100,7 +100,7 @@ app.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
     const token = jwt.sign({ id: req.user.id }, "abcdef", { expiresIn: "1h" });
-    res.cookie("usertoken", token, { sameSite: 'None', secure: true });
+    res.cookie("usertoken", token, { sameSite: 'None' });
     res.redirect(BASE_URL);
   }
 );
