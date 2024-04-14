@@ -12,7 +12,7 @@ const userdb = require("./model/userSchema");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const axios = require("axios");
-const BASE_URL = process.env.BASE_URL
+const BASE_URL = process.env.BASE_URL;
 app.use(cors({ credentials: true, origin: BASE_URL }));
 app.use(express.json());
 app.use(cookieParser());
@@ -100,12 +100,13 @@ app.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
     const token = jwt.sign({ id: req.user.id }, "abcdef", { expiresIn: "1h" });
-    res.cookie("usertoken", token, { httpOnly: true });
+    res.cookie("usertoken", token);
     res.redirect(BASE_URL);
   }
 );
 
 app.get("/login/sucess", async (req, res) => {
+  console.log("login ghfghfhj", req.user);
   if (req.user) {
     res
       .status(200)
@@ -171,66 +172,65 @@ const getAppointments = async (req, res) => {
   }
 };
 const sendEmail = async (req, res) => {
-    const formData = req.body;
-    let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.MAIL,
-            pass: process.env.PASSWORD
-        }
-    });
+  const formData = req.body;
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.MAIL,
+      pass: process.env.PASSWORD,
+    },
+  });
 
-    // Map counselor names to their email addresses
-    const counselorEmails = {
-        "Deepak Phogat": "2021csb1123@iitrpr.ac.in",
-        "Gargi Tiwari": "kumarchspiyush@gmail.com"
-    };
+  // Map counselor names to their email addresses
+  const counselorEmails = {
+    "Deepak Phogat": "2021csb1123@iitrpr.ac.in",
+    "Gargi Tiwari": "kumarchspiyush@gmail.com",
+  };
 
-    // Get the email address of the chosen counselor
-    const counselorEmail = counselorEmails[formData.counselorName];
+  // Get the email address of the chosen counselor
+  const counselorEmail = counselorEmails[formData.counselorName];
 
-    // Construct a formatted string
-    // let formattedText = '';
-    // for (let key in formData) {
-    //     formattedText += `<b>${key}:</b>&nbsp;&nbsp;${formData[key]}<br><br>`;
-    // }
-    let formattedText = '';
-    let text = `Hello  ${formData.counselorName}, <br> The following person has taken an appointment from you, please find the required details <br> <br> `
-    formattedText+=text;
-    
-    for (let key in formData) {
-        // Exclude the counselorName from the email
-        if (key !== 'counselorName') {
-            formattedText += `<b>${key}:</b>&nbsp;&nbsp;${formData[key]}<br><br>`;
-        }
+  // Construct a formatted string
+  // let formattedText = '';
+  // for (let key in formData) {
+  //     formattedText += `<b>${key}:</b>&nbsp;&nbsp;${formData[key]}<br><br>`;
+  // }
+  let formattedText = "";
+  let text = `Hello  ${formData.counselorName}, <br> The following person has taken an appointment from you, please find the required details <br> <br> `;
+  formattedText += text;
+
+  for (let key in formData) {
+    // Exclude the counselorName from the email
+    if (key !== "counselorName") {
+      formattedText += `<b>${key}:</b>&nbsp;&nbsp;${formData[key]}<br><br>`;
     }
+  }
 
-    let info = await transporter.sendMail({
-        from: '"Piyush" pushkr.1090@gmail.com', // sender address
-        to: counselorEmail, // send to the chosen counselor
-        subject: "New Counselling Appointment", // Subject line
-        html: formattedText, // formatted text body
-    });
-    res.json({ message: 'Email sent' });
-}
+  let info = await transporter.sendMail({
+    from: '"Piyush" pushkr.1090@gmail.com', // sender address
+    to: counselorEmail, // send to the chosen counselor
+    subject: "New Counselling Appointment", // Subject line
+    html: formattedText, // formatted text body
+  });
+  res.json({ message: "Email sent" });
+};
 
 const getBookedSlots = async (req, res) => {
   try {
     const { counselorName, appointmentDate } = req.query;
-    const appointments = await Appointment.find({ 
-      counselorName: counselorName, 
-      appointmentDate: new Date(appointmentDate) 
+    const appointments = await Appointment.find({
+      counselorName: counselorName,
+      appointmentDate: new Date(appointmentDate),
     });
-    const bookedSlots = appointments.map(appointment => appointment.appointmentSlot);
+    const bookedSlots = appointments.map(
+      (appointment) => appointment.appointmentSlot
+    );
     res.json(bookedSlots);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");
   }
 };
-
-
-
 
 app.post("/create", authenticate, createAppointment);
 app.get("/data", authenticate, getAppointments);
