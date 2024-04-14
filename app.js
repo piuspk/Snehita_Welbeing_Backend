@@ -99,7 +99,7 @@ app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
-    const token = jwt.sign({ id: req.user.id }, "1123326285sfgdgvx", { expiresIn: "1h" });
+    const token = jwt.sign({ id: req.user.id }, "abcdef", { expiresIn: "1h" });
     res.cookie("usertoken", token, { httpOnly: true });
     res.redirect(BASE_URL);
   }
@@ -128,7 +128,7 @@ const createAppointment = async (req, res) => {
   try {
     const token = req.cookies.usertoken;
     console.log("Token received:", token);
-    const decoded = jwt.verify(token, "1123326285sfgdgvx");
+    const decoded = jwt.verify(token, "abcdef");
     const userId = decoded.id;
     const {
       fullName,
@@ -160,7 +160,7 @@ const getAppointments = async (req, res) => {
   try {
     const token = req.cookies.usertoken;
     console.log("Token received:", token);
-    const decoded = jwt.verify(token, "1123326285sfgdgvx");
+    const decoded = jwt.verify(token, "abcdef");
     const userId = decoded.id;
     console.log(userId);
     const appointments = await Appointment.find({ userId: userId });
