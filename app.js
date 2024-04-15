@@ -36,6 +36,10 @@ app.use(
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
+    cookie: {
+      sameSite: 'none',
+      secure: true, // added secure flag
+    }
   })
 );
 
@@ -100,7 +104,7 @@ app.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
     const token = jwt.sign({ id: req.user.id }, "abcdef", { expiresIn: "1h" });
-    res.cookie("usertoken", token, { sameSite: 'None' });
+    res.cookie("usertoken", token);
     res.redirect(BASE_URL);
   }
 );
