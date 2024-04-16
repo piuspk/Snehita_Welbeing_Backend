@@ -195,6 +195,8 @@ const register2 = async (req, res) => {
       res
         .cookie("usertoken", userToken, {
           httpOnly: true,
+          sameSite: 'none',
+          secure: true
         })
         .status(200)
         .json({ message: "Success!", user: register });
@@ -232,6 +234,8 @@ const login = async (req, res) => {
     res
       .cookie("usertoken", userToken, {
         httpOnly: true,
+        sameSite: 'none',
+        secure: true
       })
       .status(200)
       .json({ message: "Success!", user: user });
